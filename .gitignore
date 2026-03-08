@@ -1,0 +1,5 @@
+build
+.vscode/*
+secrets/*
+reference/*
+scripts/env-picodisplay/
