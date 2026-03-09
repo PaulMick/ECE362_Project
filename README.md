@@ -7,11 +7,11 @@ The code, in its current form, is broken up into a few main sections.
 ## Display Driver
 This is the part of the code that handles all of the lower-level HUB75 display control. In `display_driver.c` all of the output pins to the display and some display constants (e.x. width, height) are defined. The two buffers that are used for storing the image to be displayed are created here. Additionally, the code to initialize and control all of the peripherals used in driving the display lies in this file too (with the exeption of the PIO assembly).
 
-Overall, the display driver works like this:
-1. `init_display_driver` is called which:
-a. allocates and initializes the two buffers
-b. initializes the PIO state machines
-c. starts the refresh process on core 1
+Overall, the display driver works like this:<br>
+1. `init_display_driver` is called which:<br>
+a. allocates and initializes the two buffers<br>
+b. initializes the PIO state machines<br>
+c. starts the refresh process on core 1<br>
 d. returns a `DisplayHandle` instance, which is later used to start drawing things on the display
 
 2. `refresh` starts running on core 1, which:
