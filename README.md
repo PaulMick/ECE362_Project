@@ -9,6 +9,7 @@ This is the part of the code that handles all of the lower-level HUB75 display c
 
 Overall, the display driver works like this:
 1. `init_display_driver` is called which:
+   
   1a. allocates and initializes the two buffers
   1b. initializes the PIO state machines
   1c. starts the refresh process on core 1
