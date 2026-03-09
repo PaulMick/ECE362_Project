@@ -60,9 +60,14 @@ A HUB75 RGB LED matrix is almost always controlled in this fashion (starting wit
 Since only a single row-pair is on at a time, the microcontroller, or whatever is connected to the display, is responsible for continuously shifting in new pixels, row by row, bit depth by bit depth, to maintain a static image.
 
 ### PIO State Machines
-The PIO (which stands for Programmable Input/Output) is a unique peripheral that features 8 state machines that can be used for many different things. In this case we are using 2 of them to clock in RGB pixels to the display
+The PIO (which stands for Programmable Input/Output) is a unique peripheral that features 8 state machines that can be used for many different things. In this case we are using 2 of them, 1 to clock the RGB pixels into the display and 1 to output the row selection and run the BCM.
+
+The PIO state machines can be thought of as very lightweight processor cores, as you control them with assembly instructions from the very small instruction set. They each have TX and RX FIFOs, 2 temperary storage registers (`x` and `y`), an input shift shift register (`isr`), and an output shift register (`osr`). They can also be configured to directly control GPIO pins.
+
+PIO state machines are ideal for custom/non-standard protocols like HUB75 because they offload work from the main cores, run quite fast (have same clock source as the cores, usually 150MHz), and have very reliable timing. This is especially important for HUB75 because it is intensive (running continuously, involving lots of shifts and pin outputs) and timing sensitive (irregular timing can cause flickering and/or inconsistent brightness).
 
 ## Display Utils
+
 
 ## Pico Display
 
