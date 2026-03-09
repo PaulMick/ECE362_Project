@@ -39,6 +39,19 @@ The HUB75 protocol is a protocal for controlling an RGB LED matrix with shift re
 |R1|Red bit for the bottom scan line|
 |G1|Green bit for the bottom scan line|
 |B1|Blue bit for the bottom scan line|
+|SEL0 (or A)|LSB for the row selection|
+|SEL1 (or B)|bit for the row selection|
+|SEL2 (or C)|bit for the row selection|
+|SEL3 (or D)|MSB for the row selection|
+|SEL4 (or E)|Selects panel 0 or 1 (only used with chained panels, unused here)|
+|CLK|Clock for shifting in pixel, triggers on rising edge|
+|LAT|Latches in row of pixels|
+|OE|Output Enable, enables whole display output|
+
+A HUB75 RGB LED matrix is almost always controlled in this fashion:
+1. 
+
+The microcontroller, or whatever is connected to the display, is responsible for continuously shifting in new pixels, row by row, bit depth by bit depth, to maintain a static image.
 
 ### PIO State Machines
 The PIO (which stands for Programmable Input/Output) is a unique peripheral that features 8 state machines that can be used for many different things. In this case we are using 2 of them to clock in RGB pixels to the display
