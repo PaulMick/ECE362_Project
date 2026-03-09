@@ -34,6 +34,11 @@ The HUB75 protocol is a protocal for controlling an RGB LED matrix with shift re
 |Pin|Function|
 |---|--------|
 |R0|Red bit for the top scan line|
+|G0|Green bit for the top scan line|
+|B0|Blue bit for the top scan line|
+|R1|Red bit for the bottom scan line|
+|G1|Green bit for the bottom scan line|
+|B1|Blue bit for the bottom scan line|
 
 ### PIO State Machines
 The PIO (which stands for Programmable Input/Output) is a unique peripheral that features 8 state machines that can be used for many different things. In this case we are using 2 of them to clock in RGB pixels to the display
