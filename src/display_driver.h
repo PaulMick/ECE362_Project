@@ -13,7 +13,7 @@ typedef struct {
 
 DisplayHandle init_display_driver();
 
-void start_refresh();
+void refresh();
 
 void update_frame();
 

@@ -35,7 +35,6 @@
 #define COLS 64
 #define SCAN_LINES 2
 #define ROW_PAIRS ROWS / SCAN_LINES
-#define COLOR_DEPTH 10
 
 // frame stuff
 uint32_t **frame_buf0;
@@ -121,7 +120,7 @@ DisplayHandle init_display_driver() {
     hub75_row_program_init(pio, sm_row, row_prog_offs, SEL_BASE, 4, LAT);
 
     // start display driver on core 1, leaving core 0 for other tasks
-    multicore_launch_core1(start_refresh);
+    multicore_launch_core1(refresh);
 
     // create and return display handle
     DisplayHandle dh = {
@@ -132,7 +131,7 @@ DisplayHandle init_display_driver() {
 }
 
 // continually refresh the display
-void start_refresh() {
+void refresh() {
     while (1) {
         // if new frame is ready swap buffers
         if (multicore_fifo_rvalid()) {
