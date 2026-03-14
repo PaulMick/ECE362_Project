@@ -67,7 +67,7 @@ The PIO state machines can be thought of as very lightweight processor cores, as
 PIO state machines are ideal for custom/non-standard protocols like HUB75 because they offload work from the main cores, run quite fast (have same clock source as the cores, usually 150MHz), and have very reliable timing. This is especially important for HUB75 because it is intensive (running continuously, involving lots of shifts and pin outputs) and timing sensitive (irregular timing can cause flickering and/or inconsistent brightness).
 
 ## Display Utils
-
+`display_utils.c` contains a number of utility functions for drawing to the buffer, allowing the drawing of individual pixels, lines in the cardinal directions, rectangles with variable thickness, text, and images.
 
 ## Pico Display
 
