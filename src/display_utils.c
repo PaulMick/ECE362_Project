@@ -136,6 +136,56 @@ void draw_img(int x, int y, img_t img) {
                 }
             }
             break;
+        case IMG_ENEMY1:
+            black_is_transparent = enemy1_img[0][0] >> 24;
+            for (int j = 0; j < ENEMY1_HEIGHT; j ++) {
+                for (int i = 0; i < ENEMY1_WIDTH; i ++) {
+                    if (!black_is_transparent || !(enemy1_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, enemy1_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_ENEMY2:
+            black_is_transparent = enemy2_img[0][0] >> 24;
+            for (int j = 0; j < ENEMY2_HEIGHT; j ++) {
+                for (int i = 0; i < ENEMY2_WIDTH; i ++) {
+                    if (!black_is_transparent || !(enemy2_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, enemy2_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_ENEMY3:
+            black_is_transparent = enemy3_img[0][0] >> 24;
+            for (int j = 0; j < ENEMY3_HEIGHT; j ++) {
+                for (int i = 0; i < ENEMY3_WIDTH; i ++) {
+                    if (!black_is_transparent || !(enemy3_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, enemy3_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_ENEMY4:
+            black_is_transparent = enemy4_img[0][0] >> 24;
+            for (int j = 0; j < ENEMY4_HEIGHT; j ++) {
+                for (int i = 0; i < ENEMY4_WIDTH; i ++) {
+                    if (!black_is_transparent || !(enemy4_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, enemy4_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_SHOOTER:
+            black_is_transparent = shooter_img[0][0] >> 24;
+            for (int j = 0; j < SHOOTER_HEIGHT; j ++) {
+                for (int i = 0; i < SHOOTER_WIDTH; i ++) {
+                    if (!black_is_transparent || !(shooter_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, shooter_img[j][i]);
+                    }
+                }
+            }
+            break;
         default: return; break;
     }
     
