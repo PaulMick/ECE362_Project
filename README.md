@@ -45,18 +45,29 @@ The HUB75 protocol is a protocal for controlling an RGB LED matrix with shift re
 |SEL3 (or D)|MSB for the row selection|
 |SEL4 (or E)|Selects panel 0 or 1 (only used with chained panels, unused here)|
 |CLK|Clock for shifting in pixel, triggers on rising edge|
-|LAT|Latches in row of pixels|
+|LAT|Latches in row of pixels to a specific row on the display|
 |OE|Output Enable, enables whole display output|
 
-A HUB75 RGB LED matrix is almost always controlled in this fashion:
-1. 
+A HUB75 RGB LED matrix is almost always controlled in this fashion (starting with OE deasserted):
+1. Using pins R0, G0, B0, R1, G1, B1, and CLK, shift in a row of color bits from a single color bit depth. It doesn't really matter whether this goes from LSB to MSB or MSB to LSB, or even in amy order really.
+2. Output the row selection with SEL0, SEL1, SEL2, and SEL3
+3. Toggle LAT high and then low
+4. Assert OE (OE is usually active-low) for an amount of time proportional to 2 ^ currect color bit depth. This is known as binary code modulation (or BCM) and is how we achieve a whole gradient of colors. Since HUB75 RGB LED displays can only turn LEDs on or off, we modulate how long they are on in this way to effectively dim them from our point of view.
+5. Repeat 1-4 for all 16 row-pairs
+6. Repeat 1-5 for all 8 color bit depths
+7. Repeat 1-6 continuously to display your frame for longer
 
-The microcontroller, or whatever is connected to the display, is responsible for continuously shifting in new pixels, row by row, bit depth by bit depth, to maintain a static image.
+Since only a single row-pair is on at a time, the microcontroller, or whatever is connected to the display, is responsible for continuously shifting in new pixels, row by row, bit depth by bit depth, to maintain a static image.
 
 ### PIO State Machines
-The PIO (which stands for Programmable Input/Output) is a unique peripheral that features 8 state machines that can be used for many different things. In this case we are using 2 of them to clock in RGB pixels to the display
+The PIO (which stands for Programmable Input/Output) is a unique peripheral that features 8 state machines that can be used for many different things. In this case we are using 2 of them, 1 to clock the RGB pixels into the display and 1 to output the row selection and run the BCM.
+
+The PIO state machines can be thought of as very lightweight processor cores, as you control them with assembly instructions from the very small instruction set. They each have TX and RX FIFOs, 2 temperary storage registers (`x` and `y`), an input shift shift register (`isr`), and an output shift register (`osr`). They can also be configured to directly control GPIO pins.
+
+PIO state machines are ideal for custom/non-standard protocols like HUB75 because they offload work from the main cores, run quite fast (have same clock source as the cores, usually 150MHz), and have very reliable timing. This is especially important for HUB75 because it is intensive (running continuously, involving lots of shifts and pin outputs) and timing sensitive (irregular timing can cause flickering and/or inconsistent brightness).
 
 ## Display Utils
+`display_utils.c` contains a number of utility functions for drawing to the buffer, allowing the drawing of individual pixels, lines in the cardinal directions, rectangles with variable thickness, text, and images.
 
 ## Pico Display
 
