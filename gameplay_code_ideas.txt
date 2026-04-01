@@ -1,0 +1,11 @@
+This is some ideas for how to implement the gameplay code:
+
+Use a 64x32 array to track the positions of the enemies (fill pixels based on the shapes of enemies) and the walls (same procedure). This would likely be a char array, so different values
+could be used for different states, e.g. bottom row of enemies, the corner of the image to be drawn. 
+
+Use a linear array to track the health of the enemies and walls, and a variable to track the health of the player. Could also track which enemies are in the bottom row the same way.
+Then, track projectiles and if one hits an object, change the state of the object and remove the projectile.
+
+
+In the actual space invaders game, the enemies move faster towards the end of the stage, and they spawn the next stage lower than they started. Enemies also move slightly side to side and move
+down occasionally. Projectiles fired from the enemies are fired from the bottom row at random intervals.
