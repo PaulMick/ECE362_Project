@@ -2,10 +2,10 @@ import numpy as np
 import cv2
 
 # set these manually
-width = 23
-height = 32
-fname = ""
-cname = ""
+width = 10
+height = 6
+fname = "shooter"
+cname = "shooter"
 
 black_is_transparent = True
 
