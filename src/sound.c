@@ -8,22 +8,19 @@
 #include "gen_utils.h"
 
 // number of wave samples
-#define WAVE_SAMPLES 1000
+#define WAVE_SAMPLES 100
 
 // speaker pin numbers
 #define SPEAKER0 30
-#define SPEAKER1 31
-#define SPEAKER2 32
-#define SPEAKER3 33
+#define SPEAKER1 32
+#define SPEAKER2 34
+#define SPEAKER3 36
 #define SPEAKER_PWM_CHAN0 7
 #define SPEAKER_PWM_CHAN1 8
+#define SPEAKER_PWM_CHAN2 9
+#define SPEAKER_PWM_CHAN3 10
 
 uint8_t wavetable[WAVE_SAMPLES];
-
-int speaker0_level = 0;
-int speaker1_level = 0;
-int speaker2_level = 0;
-int speaker3_level = 0;
 
 // initialize wavetable, normalized to 0-255 range
 void init_wavetable() {
@@ -46,26 +43,23 @@ void init_sound() {
     gpio_set_function(SPEAKER1, GPIO_FUNC_PWM);
     gpio_set_function(SPEAKER2, GPIO_FUNC_PWM);
     gpio_set_function(SPEAKER3, GPIO_FUNC_PWM);
-    pwm_set_clkdiv(SPEAKER_PWM_CHAN0, 150);
-    pwm_set_clkdiv(SPEAKER_PWM_CHAN1, 150);
-    pwm_set_wrap(SPEAKER_PWM_CHAN1, 100); // max output freq of 10kHz
+    pwm_set_clkdiv(SPEAKER_PWM_CHAN0, 15);
+    pwm_set_clkdiv(SPEAKER_PWM_CHAN1, 15);
+    pwm_set_clkdiv(SPEAKER_PWM_CHAN2, 15);
+    pwm_set_clkdiv(SPEAKER_PWM_CHAN3, 15);
+    pwm_set_wrap(SPEAKER_PWM_CHAN0, 100);
     pwm_set_wrap(SPEAKER_PWM_CHAN1, 100);
+    pwm_set_wrap(SPEAKER_PWM_CHAN2, 100);
+    pwm_set_wrap(SPEAKER_PWM_CHAN3, 100);
     pwm_set_chan_level(SPEAKER_PWM_CHAN0, PWM_CHAN_A, 0);
-    pwm_set_chan_level(SPEAKER_PWM_CHAN0, PWM_CHAN_B, 0);
     pwm_set_chan_level(SPEAKER_PWM_CHAN1, PWM_CHAN_A, 0);
-    pwm_set_chan_level(SPEAKER_PWM_CHAN1, PWM_CHAN_B, 0);
+    pwm_set_chan_level(SPEAKER_PWM_CHAN2, PWM_CHAN_A, 0);
+    pwm_set_chan_level(SPEAKER_PWM_CHAN3, PWM_CHAN_A, 0);
     pwm_set_enabled(SPEAKER_PWM_CHAN0, true);
     pwm_set_enabled(SPEAKER_PWM_CHAN1, true);
+    pwm_set_enabled(SPEAKER_PWM_CHAN2, true);
+    pwm_set_enabled(SPEAKER_PWM_CHAN3, true);
 
     // initialize dma
 
 }
-
-// set level values of all 4 outputs (0-100 incl.)
-void set_levels(uint8_t val0, uint8_t val1, uint8_t val2, uint8_t val3) {
-    pwm_set_chan_level(SPEAKER_PWM_CHAN0, PWM_CHAN_A, val0);
-    pwm_set_chan_level(SPEAKER_PWM_CHAN0, PWM_CHAN_B, val1);
-    pwm_set_chan_level(SPEAKER_PWM_CHAN1, PWM_CHAN_A, val2);
-    pwm_set_chan_level(SPEAKER_PWM_CHAN1, PWM_CHAN_B, val3);
-}
-
