@@ -47,10 +47,10 @@ void init_sound() {
     gpio_set_function(SPEAKER1, GPIO_FUNC_PWM);
     gpio_set_function(SPEAKER2, GPIO_FUNC_PWM);
     gpio_set_function(SPEAKER3, GPIO_FUNC_PWM);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER0, 15);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER1, 15);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER2, 15);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER3, 15);
+    pwm_set_clkdiv(PWM_CHAN_SPEAKER0, 5.859375f);
+    pwm_set_clkdiv(PWM_CHAN_SPEAKER1, 5.859375f);
+    pwm_set_clkdiv(PWM_CHAN_SPEAKER2, 5.859375f);
+    pwm_set_clkdiv(PWM_CHAN_SPEAKER3, 5.859375f);
     pwm_set_wrap(PWM_CHAN_SPEAKER0, 100);
     pwm_set_wrap(PWM_CHAN_SPEAKER1, 100);
     pwm_set_wrap(PWM_CHAN_SPEAKER2, 100);
