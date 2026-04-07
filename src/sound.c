@@ -127,5 +127,17 @@ void set_freqs(float freq0, float freq1, float freq2, float freq3) {
     if (freq3 <= 0) {
         freq3 = 1;
     }
-    set_dividers(5859.375f / freq0, 5859.375f / freq1, 5859.375f / freq2, 5859.375f / freq3);
+    if (freq0 > FREQ_MAX) {
+        freq0 = FREQ_MAX;
+    }
+    if (freq1 > FREQ_MAX) {
+        freq1 = FREQ_MAX;
+    }
+    if (freq2 > FREQ_MAX) {
+        freq2 = FREQ_MAX;
+    }
+    if (freq3 > FREQ_MAX) {
+        freq3 = FREQ_MAX;
+    }
+    set_dividers(FREQ_MAX / freq0, FREQ_MAX / freq1, FREQ_MAX / freq2, FREQ_MAX / freq3);
 }

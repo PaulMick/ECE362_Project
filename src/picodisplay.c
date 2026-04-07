@@ -23,7 +23,7 @@ int init() {
 }
 
 int run() {
-    int x = 1;
+    float x = 0.125;
     while (1) {
         // fill_frame(0, 0, 0);
         // ///////////////////////////
@@ -45,9 +45,12 @@ int run() {
         // sleep_ms(1);
         // update_frame();
         // sleep_ms(9);
-        set_freqs(x, x, x, x);
-        x ++;
-        sleep_ms(10);
+        set_freqs(500, 1000, 2000, 4000);
+        // x += 0.125;
+        // if (x > FREQ_MAX) {
+        //     x = 0.125;
+        // }
+        // sleep_ms(10);
     }
 
     return 0;

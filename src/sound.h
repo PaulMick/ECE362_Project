@@ -1,6 +1,8 @@
 #ifndef SOUND_H
 #define SOUND_H
 
+#define FREQ_MAX 5859.375f
+
 void init_wavetable();
 void init_sound();
 
