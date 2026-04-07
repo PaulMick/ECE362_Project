@@ -3,6 +3,7 @@
 #include <math.h>
 #include "hardware/pwm.h"
 #include "hardware/dma.h"
+#include "hardware/timer.h"
 #include "pico/stdlib.h"
 #include "sound.h"
 #include "gen_utils.h"
@@ -26,10 +27,13 @@
 
 uint8_t wavetable[WAVE_SAMPLES];
 
+chord_t *current_sound;
+uint32_t sound_counter = 0;
+
 // initialize wavetable, normalized to 0-255 range
 void init_wavetable() {
     for (int i = 0; i < WAVE_SAMPLES; i ++) {
-        wavetable[i] = (uint8_t) (50 * ((int) sin((i / WAVE_SAMPLES) * 2 * 3.14159265)) + 50);
+        wavetable[i] = (uint8_t) (25 * (sin((((float) i) / ((float) WAVE_SAMPLES)) * 2 * 3.14159265)) + 25);
     }
 }
 
@@ -51,10 +55,10 @@ void init_sound() {
     pwm_set_clkdiv(PWM_CHAN_SPEAKER1, 5.859375f);
     pwm_set_clkdiv(PWM_CHAN_SPEAKER2, 5.859375f);
     pwm_set_clkdiv(PWM_CHAN_SPEAKER3, 5.859375f);
-    pwm_set_wrap(PWM_CHAN_SPEAKER0, 100);
-    pwm_set_wrap(PWM_CHAN_SPEAKER1, 100);
-    pwm_set_wrap(PWM_CHAN_SPEAKER2, 100);
-    pwm_set_wrap(PWM_CHAN_SPEAKER3, 100);
+    pwm_set_wrap(PWM_CHAN_SPEAKER0, 50);
+    pwm_set_wrap(PWM_CHAN_SPEAKER1, 50);
+    pwm_set_wrap(PWM_CHAN_SPEAKER2, 50);
+    pwm_set_wrap(PWM_CHAN_SPEAKER3, 50);
     pwm_set_chan_level(PWM_CHAN_SPEAKER0, PWM_CHAN_A, 0);
     pwm_set_chan_level(PWM_CHAN_SPEAKER1, PWM_CHAN_A, 0);
     pwm_set_chan_level(PWM_CHAN_SPEAKER2, PWM_CHAN_A, 0);
@@ -93,6 +97,11 @@ void init_sound() {
     dma_channel_configure(DMA_CHAN_SPEAKER1, &cfg_speaker1, &(pwm_hw->slice[PWM_CHAN_SPEAKER1].cc), wavetable, WAVE_SAMPLES | (DMA_CH1_TRANS_COUNT_MODE_VALUE_TRIGGER_SELF << DMA_CH1_TRANS_COUNT_MODE_LSB), true);
     dma_channel_configure(DMA_CHAN_SPEAKER2, &cfg_speaker2, &(pwm_hw->slice[PWM_CHAN_SPEAKER2].cc), wavetable, WAVE_SAMPLES | (DMA_CH2_TRANS_COUNT_MODE_VALUE_TRIGGER_SELF << DMA_CH2_TRANS_COUNT_MODE_LSB), true);
     dma_channel_configure(DMA_CHAN_SPEAKER3, &cfg_speaker3, &(pwm_hw->slice[PWM_CHAN_SPEAKER3].cc), wavetable, WAVE_SAMPLES | (DMA_CH3_TRANS_COUNT_MODE_VALUE_TRIGGER_SELF << DMA_CH3_TRANS_COUNT_MODE_LSB), true);
+
+    // timer
+    hw_set_bits(&timer0_hw->inte, 1 << 0);
+    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 0), sound_isr);
+    irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 0), true);
 }
 
 void set_dividers(float div0, float div1, float div2, float div3) {
@@ -116,16 +125,24 @@ void set_dividers(float div0, float div1, float div2, float div3) {
 
 void set_freqs(float freq0, float freq1, float freq2, float freq3) {
     if (freq0 <= 0) {
-        freq0 = 1;
+        pwm_set_enabled(PWM_CHAN_SPEAKER0, false);
+    } else {
+        pwm_set_enabled(PWM_CHAN_SPEAKER0, true);
     }
     if (freq1 <= 0) {
-        freq1 = 1;
+        pwm_set_enabled(PWM_CHAN_SPEAKER1, false);
+    } else {
+        pwm_set_enabled(PWM_CHAN_SPEAKER1, true);
     }
     if (freq2 <= 0) {
-        freq2 = 1;
+        pwm_set_enabled(PWM_CHAN_SPEAKER2, false);
+    } else {
+        pwm_set_enabled(PWM_CHAN_SPEAKER2, true);
     }
     if (freq3 <= 0) {
-        freq3 = 1;
+        pwm_set_enabled(PWM_CHAN_SPEAKER3, false);
+    } else {
+        pwm_set_enabled(PWM_CHAN_SPEAKER3, true);
     }
     if (freq0 > FREQ_MAX) {
         freq0 = FREQ_MAX;
@@ -140,4 +157,28 @@ void set_freqs(float freq0, float freq1, float freq2, float freq3) {
         freq3 = FREQ_MAX;
     }
     set_dividers(FREQ_MAX / freq0, FREQ_MAX / freq1, FREQ_MAX / freq2, FREQ_MAX / freq3);
+}
+
+void set_notes(note_t note0, note_t note1, note_t note2, note_t note3) {
+    set_freqs(((float) note0) / NOTE_FACTOR, ((float) note1) / NOTE_FACTOR, ((float) note2) / NOTE_FACTOR, ((float) note3) / NOTE_FACTOR);
+}
+
+void play_sound(chord_t sound[]) {
+    current_sound = sound;
+    sound_counter = 0;
+    uint64_t sound_target = timer0_hw->timerawl + 10;
+    timer_hardware_alarm_set_target(timer0_hw, 0, sound_target);
+}
+
+void sound_isr() {
+    hw_set_bits(&timer0_hw->intr, 1 << 0);
+    chord_t current_chord = current_sound[sound_counter];
+    if (current_chord.duration == END) {
+        set_notes(REST, REST, REST, REST);
+        return;
+    }
+    set_notes(current_chord.note0, current_chord.note1, current_chord.note2, current_chord.note3);
+    uint64_t sound_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE;
+    timer_hardware_alarm_set_target(timer0_hw, 0, sound_target);
+    sound_counter ++;
 }

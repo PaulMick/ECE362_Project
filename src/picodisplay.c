@@ -23,7 +23,7 @@ int init() {
 }
 
 int run() {
-    float x = 0.125;
+    // float x = 103.826;
     while (1) {
         // fill_frame(0, 0, 0);
         // ///////////////////////////
@@ -45,7 +45,10 @@ int run() {
         // sleep_ms(1);
         // update_frame();
         // sleep_ms(9);
-        set_freqs(500, 1000, 2000, 4000);
+        // set_freqs(x, x, x, x);
+        // set_notes(REST, REST, REST, REST);
+        play_sound(beep);
+        sleep_ms(5000);
         // x += 0.125;
         // if (x > FREQ_MAX) {
         //     x = 0.125;
