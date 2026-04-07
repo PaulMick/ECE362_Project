@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -47,8 +49,12 @@ int run() {
         // sleep_ms(9);
         // set_freqs(x, x, x, x);
         // set_notes(REST, REST, REST, REST);
-        play_sound(beep);
-        sleep_ms(5000);
+
+        play_sound(hp);
+        sleep_ms(100000);
+
+        // set_notes(G4, G4, G4, G4);
+
         // x += 0.125;
         // if (x > FREQ_MAX) {
         //     x = 0.125;

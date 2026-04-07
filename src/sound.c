@@ -102,6 +102,9 @@ void init_sound() {
     hw_set_bits(&timer0_hw->inte, 1 << 0);
     irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 0), sound_isr);
     irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 0), true);
+    hw_set_bits(&timer0_hw->inte, 1 << 1);
+    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 1), sound_cutoff_isr);
+    irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 1), true);
 }
 
 void set_dividers(float div0, float div1, float div2, float div3) {
@@ -171,7 +174,7 @@ void play_sound(chord_t sound[]) {
 }
 
 void sound_isr() {
-    hw_set_bits(&timer0_hw->intr, 1 << 0);
+    hw_clear_bits(&timer0_hw->intr, 1 << 0);
     chord_t current_chord = current_sound[sound_counter];
     if (current_chord.duration == END) {
         set_notes(REST, REST, REST, REST);
@@ -179,6 +182,13 @@ void sound_isr() {
     }
     set_notes(current_chord.note0, current_chord.note1, current_chord.note2, current_chord.note3);
     uint64_t sound_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE;
+    uint64_t cutoff_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE - US_CUTOFF;
     timer_hardware_alarm_set_target(timer0_hw, 0, sound_target);
+    timer_hardware_alarm_set_target(timer0_hw, 1, cutoff_target);
     sound_counter ++;
+}
+
+void sound_cutoff_isr() {
+    hw_clear_bits(&timer0_hw->intr, 1 << 1);
+    set_notes(REST, REST, REST, REST);
 }

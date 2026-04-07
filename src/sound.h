@@ -3,7 +3,9 @@
 
 #define FREQ_MAX 11718.75f
 #define NOTE_FACTOR 16384.0f
-#define US_64TH_NOTE 31250 // 120 bpm
+#define BPM 180
+#define US_64TH_NOTE (int) (1000000.0f / (16.0f * ((float) BPM / 60.0f)))
+#define US_CUTOFF (int) 16000.0f / ((float) BPM / (float) 200)
 
 typedef enum {
     REST = 0,
@@ -104,6 +106,8 @@ typedef enum {
     _QTR = 16,
     _HLF = 32,
     _WHL = 64,
+    _DQTR = 24,
+    _3QTR = 48
 } duration_t;
 
 typedef struct {
@@ -114,11 +118,6 @@ typedef struct {
     uint32_t duration; // in # of 64th notes, same format as duration_t, 0 to signify end of chord sequence
 } chord_t;
 
-static chord_t beep[] = {
-    {A6, A6, A6, A6, _WHL},
-    {REST, REST, REST, REST, END}
-};
-
 void init_wavetable();
 void init_sound();
 
@@ -127,5 +126,44 @@ void set_freqs(float freq0, float freq1, float freq2, float freq3);
 void set_notes(note_t note0, note_t note1, note_t note2, note_t note3);
 void play_sound(chord_t sound[]);
 void sound_isr();
+void sound_cutoff_isr();
+
+static chord_t beep[] = {
+    {A5, A5, A5, A5, _32ND},
+    {REST, REST, REST, REST, END}
+};
+
+static chord_t hp[] = {
+    {E4, E4, E4, E4, _HLF},
+    {F4, F4, F4, F4, _QTR},
+    {G4, G4, G4, G4, _QTR},
+    {Af4, Af4, Af4, Af4, _DQTR},
+    {Bf4, Bf4, Bf4, Bf4, _8TH},
+    {C5, C5, C5, C5, _QTR},
+    {C5, C5, C5, C5, _QTR},
+    {Df5, Df5, Df5, Df5, _QTR},
+    {Df5, Df5, Df5, Df5, _8TH},
+    {Df5, Df5, Df5, Df5, _8TH},
+    {Af4, Af4, Af4, Af4, _QTR},
+    {Bf4, Bf4, Bf4, Bf4, _8TH},
+    {Bf4, Bf4, Bf4, Bf4, _8TH},
+    {C5, C5, C5, C5, _3QTR},
+    {REST, REST, REST, REST, _QTR},
+    {C5, C5, C5, C5, _HLF},
+    {C5, C5, C5, C5, _QTR},
+    {Bf4, Bf4, Bf4, Bf4, _QTR},
+    {Af4, Af4, Af4, Af4, _DQTR},
+    {Bf4, Bf4, Bf4, Bf4, _8TH},
+    {C5, C5, C5, C5, _QTR},
+    {C5, C5, C5, C5, _QTR},
+    {Bf4, Bf4, Bf4, Bf4, _QTR},
+    {F4, F4, F4, F4, _8TH},
+    {G4, G4, G4, G4, _8TH},
+    {Af4, Af4, Af4, Af4, _QTR},
+    {G4, G4, G4, G4, _8TH},
+    {F4, F4, F4, F4, _8TH},
+    {Bf4, Bf4, Bf4, Bf4, _3QTR},
+    {REST, REST, REST, REST, END}
+};
 
 #endif
