@@ -4,8 +4,10 @@
 #include "display_driver.h"
 #include "display_utils.h"
 #include "enemy_logic.h"
+#include "start_screen.h"
 
-static int active_level = 2;
+static int active_level = 1;
+static int start_screen = 1;
 
 static void enemy_level_init(void) {
     if (active_level == 1) {
@@ -37,19 +39,21 @@ int init() {
     // display utils
     init_display_utils(dh);
 
-    enemy_level_init();
-
     return 0;
 }
 
 int run() {
     while (1) {
         fill_frame(0, 0, 0);
-
-        enemy_level_update();
-        enemy_logic_draw();
-        draw_img((COLS - 10) / 2, ROWS - 7, IMG_SHOOTER);
-
+        if (start_screen){
+            start_screen_draw();
+        }
+        else{
+            //enemy_level_init() run on button press...upcoming
+            enemy_level_update();
+            enemy_logic_draw();
+            draw_img((COLS - 10) / 2, ROWS - 7, IMG_SHOOTER);
+        }
         update_frame();
         sleep_ms(50);
     }
