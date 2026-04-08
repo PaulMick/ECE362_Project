@@ -2,14 +2,14 @@ import numpy as np
 import cv2
 
 # set these manually
-width = 23
-height = 32
-fname = ""
-cname = ""
+width = 10
+height = 7
+fname = "wall_dmg_4"
+cname = "wall_dmg_4"
 
 black_is_transparent = True
 
-cv_im = cv2.imread(f"input/{fname}.png")
+cv_im = cv2.imread(f"images/{fname}.png")
 np_im = np.asarray(cv_im)
 
 print(f"#define {cname.upper()}_WIDTH {width}")
