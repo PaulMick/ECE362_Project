@@ -6,8 +6,10 @@
 #include "enemy_logic.h"
 #include "start_screen.h"
 
-static int active_level = 1;
+static int active_level = 2;
 static int start_screen = 1;
+int frame_count = 0;
+
 
 static void enemy_level_init(void) {
     if (active_level == 1) {
@@ -47,15 +49,19 @@ int run() {
         fill_frame(0, 0, 0);
         if (start_screen){
             start_screen_draw();
+            if (frame_count == 200){
+                start_screen = 0;
+                enemy_level_init();
+            }
         }
         else{
-            //enemy_level_init() run on button press...upcoming
             enemy_level_update();
             enemy_logic_draw();
             draw_img((COLS - 10) / 2, ROWS - 7, IMG_SHOOTER);
         }
         update_frame();
-        sleep_ms(50);
+        frame_count++;
+        sleep_ms(16);
     }
 
     return 0;

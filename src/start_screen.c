@@ -9,7 +9,7 @@ int start_screen_draw(void) {
     const int len1 = 5;
     const int len2 = 8;
     const int total_chars = len1 + len2;
-    const int frames_per_char = 4; //~200ms per, tune as needed
+    const int frames_per_char = 12; //~200ms per, tune as needed
     
     int reveal = frame / frames_per_char;
     if (reveal > total_chars) {
@@ -39,7 +39,7 @@ int start_screen_draw(void) {
         draw_rect(x2, y2, 2, 5, -1, 0, 255, 100);
     }
     // hold 30 frames after full reveal, then loop
-    if (frame > total_chars * frames_per_char + 30) {
+    if (frame > total_chars * frames_per_char + 40) {
         frame = 0;
     } else {
         frame++;
