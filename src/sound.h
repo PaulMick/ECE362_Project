@@ -110,6 +110,11 @@ typedef enum {
     _3QTR = 48
 } duration_t;
 
+typedef enum {
+    SEL_A,
+    SEL_B
+} sound_selection_t;
+
 typedef struct {
     note_t note0;
     note_t note1;
@@ -121,48 +126,27 @@ typedef struct {
 void init_wavetable();
 void init_sound();
 
-void set_dividers(float div0, float div1, float div2, float div3);
-void set_freqs(float freq0, float freq1, float freq2, float freq3);
-void set_notes(note_t note0, note_t note1, note_t note2, note_t note3);
-void play_sound(chord_t sound[]);
-void sound_isr();
-void sound_cutoff_isr();
+void set_divider(float div, uint8_t index);
+void set_freq(float freq, uint8_t index);
+void set_note(note_t note, uint8_t index);
+void play_sound(chord_t sound[], sound_selection_t sel);
+void sound_isr_a();
+void sound_cutoff_isr_a();
+void sound_isr_b();
+void sound_cutoff_isr_b();
 
 static chord_t beep[] = {
     {A5, A5, A5, A5, _32ND},
     {REST, REST, REST, REST, END}
 };
 
-static chord_t hp[] = {
-    {E4, E4, E4, E4, _HLF},
-    {F4, F4, F4, F4, _QTR},
-    {G4, G4, G4, G4, _QTR},
-    {Af4, Af4, Af4, Af4, _DQTR},
-    {Bf4, Bf4, Bf4, Bf4, _8TH},
-    {C5, C5, C5, C5, _QTR},
-    {C5, C5, C5, C5, _QTR},
-    {Df5, Df5, Df5, Df5, _QTR},
-    {Df5, Df5, Df5, Df5, _8TH},
-    {Df5, Df5, Df5, Df5, _8TH},
-    {Af4, Af4, Af4, Af4, _QTR},
-    {Bf4, Bf4, Bf4, Bf4, _8TH},
-    {Bf4, Bf4, Bf4, Bf4, _8TH},
-    {C5, C5, C5, C5, _3QTR},
-    {REST, REST, REST, REST, _QTR},
-    {C5, C5, C5, C5, _HLF},
-    {C5, C5, C5, C5, _QTR},
-    {Bf4, Bf4, Bf4, Bf4, _QTR},
-    {Af4, Af4, Af4, Af4, _DQTR},
-    {Bf4, Bf4, Bf4, Bf4, _8TH},
-    {C5, C5, C5, C5, _QTR},
-    {C5, C5, C5, C5, _QTR},
-    {Bf4, Bf4, Bf4, Bf4, _QTR},
-    {F4, F4, F4, F4, _8TH},
-    {G4, G4, G4, G4, _8TH},
-    {Af4, Af4, Af4, Af4, _QTR},
-    {G4, G4, G4, G4, _8TH},
-    {F4, F4, F4, F4, _8TH},
-    {Bf4, Bf4, Bf4, Bf4, _3QTR},
+static chord_t intro_sound[] = {
+    {E5, Fs5, G5, REST, _32ND},
+    {REST, REST, REST, REST, END}
+};
+
+static chord_t long_note[] = {
+    {REST, REST, REST, A4, 256},
     {REST, REST, REST, REST, END}
 };
 

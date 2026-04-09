@@ -27,8 +27,10 @@
 
 uint8_t wavetable[WAVE_SAMPLES];
 
-chord_t *current_sound;
-uint32_t sound_counter = 0;
+chord_t *current_sound_a;
+chord_t *current_sound_b;
+uint32_t sound_counter_a = 0;
+uint32_t sound_counter_b = 0;
 
 // initialize wavetable, normalized to 0-255 range
 void init_wavetable() {
@@ -100,95 +102,103 @@ void init_sound() {
 
     // timer
     hw_set_bits(&timer0_hw->inte, 1 << 0);
-    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 0), sound_isr);
+    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 0), sound_isr_a);
     irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 0), true);
     hw_set_bits(&timer0_hw->inte, 1 << 1);
-    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 1), sound_cutoff_isr);
+    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 1), sound_cutoff_isr_a);
     irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 1), true);
+    hw_set_bits(&timer0_hw->inte, 1 << 2);
+    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 2), sound_isr_b);
+    irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 2), true);
+    hw_set_bits(&timer0_hw->inte, 1 << 3);
+    irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer0_hw, 3), sound_cutoff_isr_b);
+    irq_set_enabled(timer_hardware_alarm_get_irq_num(timer0_hw, 3), true);
+    
 }
 
-void set_dividers(float div0, float div1, float div2, float div3) {
-    if (div0 > 255.9375f) {
-        div0 = 255.9375f;
+void set_divider(float div, uint8_t index) {
+    if (div > 255.9375f) {
+        div = 255.9375f;
     }
-    if (div1 > 255.9375f) {
-        div1 = 255.9375f;
-    }
-    if (div2 > 255.9375f) {
-        div2 = 255.9375f;
-    }
-    if (div3 > 255.9375f) {
-        div3 = 255.9375f;
-    }
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER0, div0);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER1, div1);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER2, div2);
-    pwm_set_clkdiv(PWM_CHAN_SPEAKER3, div3);
+    pwm_set_clkdiv(PWM_CHAN_SPEAKER0 + index, div);
 }
 
-void set_freqs(float freq0, float freq1, float freq2, float freq3) {
-    if (freq0 <= 0) {
-        pwm_set_enabled(PWM_CHAN_SPEAKER0, false);
+void set_freq(float freq, uint8_t index) {
+    if (freq <= 0) {
+        pwm_set_enabled(PWM_CHAN_SPEAKER0 + index, false);
     } else {
-        pwm_set_enabled(PWM_CHAN_SPEAKER0, true);
+        pwm_set_enabled(PWM_CHAN_SPEAKER0 + index, true);
     }
-    if (freq1 <= 0) {
-        pwm_set_enabled(PWM_CHAN_SPEAKER1, false);
-    } else {
-        pwm_set_enabled(PWM_CHAN_SPEAKER1, true);
+    if (freq > FREQ_MAX) {
+        freq = FREQ_MAX;
     }
-    if (freq2 <= 0) {
-        pwm_set_enabled(PWM_CHAN_SPEAKER2, false);
-    } else {
-        pwm_set_enabled(PWM_CHAN_SPEAKER2, true);
-    }
-    if (freq3 <= 0) {
-        pwm_set_enabled(PWM_CHAN_SPEAKER3, false);
-    } else {
-        pwm_set_enabled(PWM_CHAN_SPEAKER3, true);
-    }
-    if (freq0 > FREQ_MAX) {
-        freq0 = FREQ_MAX;
-    }
-    if (freq1 > FREQ_MAX) {
-        freq1 = FREQ_MAX;
-    }
-    if (freq2 > FREQ_MAX) {
-        freq2 = FREQ_MAX;
-    }
-    if (freq3 > FREQ_MAX) {
-        freq3 = FREQ_MAX;
-    }
-    set_dividers(FREQ_MAX / freq0, FREQ_MAX / freq1, FREQ_MAX / freq2, FREQ_MAX / freq3);
+    set_divider(FREQ_MAX / freq, index);
 }
 
-void set_notes(note_t note0, note_t note1, note_t note2, note_t note3) {
-    set_freqs(((float) note0) / NOTE_FACTOR, ((float) note1) / NOTE_FACTOR, ((float) note2) / NOTE_FACTOR, ((float) note3) / NOTE_FACTOR);
+void set_note(note_t note, uint8_t index) {
+    set_freq(((float) note) / NOTE_FACTOR, index);
 }
 
-void play_sound(chord_t sound[]) {
-    current_sound = sound;
-    sound_counter = 0;
+void play_sound(chord_t sound[], sound_selection_t sel) {
+    if (sel == SEL_A) {
+        current_sound_a = sound;
+        sound_counter_a = 0;
+    } else {
+        current_sound_b = sound;
+        sound_counter_b = 0;
+    }
     uint64_t sound_target = timer0_hw->timerawl + 10;
-    timer_hardware_alarm_set_target(timer0_hw, 0, sound_target);
+    if (sel == SEL_A) {
+        timer_hardware_alarm_set_target(timer0_hw, 0, sound_target);
+    } else {
+        timer_hardware_alarm_set_target(timer0_hw, 2, sound_target);
+    }
 }
 
-void sound_isr() {
+void sound_isr_a() {
     hw_clear_bits(&timer0_hw->intr, 1 << 0);
-    chord_t current_chord = current_sound[sound_counter];
+    chord_t current_chord = current_sound_a[sound_counter_a];
     if (current_chord.duration == END) {
-        set_notes(REST, REST, REST, REST);
+        set_note(REST, 0);
+        set_note(REST, 1);
+        set_note(REST, 2);
         return;
     }
-    set_notes(current_chord.note0, current_chord.note1, current_chord.note2, current_chord.note3);
+    set_note(current_chord.note0, 0);
+    set_note(current_chord.note1, 1);
+    set_note(current_chord.note2, 2);
     uint64_t sound_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE;
     uint64_t cutoff_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE - US_CUTOFF;
     timer_hardware_alarm_set_target(timer0_hw, 0, sound_target);
     timer_hardware_alarm_set_target(timer0_hw, 1, cutoff_target);
-    sound_counter ++;
+    sound_counter_a ++;
 }
 
-void sound_cutoff_isr() {
+void sound_isr_b() {
+    hw_clear_bits(&timer0_hw->intr, 1 << 2);
+    chord_t current_chord = current_sound_b[sound_counter_b];
+    if (current_chord.duration == END) {
+        set_note(REST, 3);
+        return;
+    }
+    set_note(current_chord.note3, 3);
+    uint64_t sound_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE;
+    uint64_t cutoff_target = timer0_hw->timerawl + current_chord.duration * US_64TH_NOTE - US_CUTOFF;
+    timer_hardware_alarm_set_target(timer0_hw, 2, sound_target);
+    timer_hardware_alarm_set_target(timer0_hw, 3, cutoff_target);
+    sound_counter_b ++;
+}
+
+void sound_cutoff_isr_a() {
+    printf("a\n");
     hw_clear_bits(&timer0_hw->intr, 1 << 1);
-    set_notes(REST, REST, REST, REST);
+    set_note(REST, 0);
+    set_note(REST, 1);
+    set_note(REST, 2);
+}
+
+void sound_cutoff_isr_b() {
+    printf("b\n");
+    hw_clear_bits(&timer0_hw->intr, 1 << 3);
+    set_note(REST, 3);
 }

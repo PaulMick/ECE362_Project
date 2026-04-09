@@ -49,8 +49,9 @@ int run() {
         // sleep_ms(9);
         // set_freqs(x, x, x, x);
         // set_notes(REST, REST, REST, REST);
-
-        play_sound(hp);
+        play_sound(long_note, SEL_B);
+        sleep_ms(500);
+        play_sound(intro_sound, SEL_A);
         sleep_ms(100000);
 
         // set_notes(G4, G4, G4, G4);
