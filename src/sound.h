@@ -5,7 +5,7 @@
 #define NOTE_FACTOR 16384.0f
 #define BPM 180
 #define US_64TH_NOTE (int) (1000000.0f / (16.0f * ((float) BPM / 60.0f)))
-#define US_CUTOFF (int) 16000.0f / ((float) BPM / (float) 200)
+#define US_CUTOFF (int) 10000.0f / ((float) BPM / (float) 200)
 
 typedef enum {
     REST = 0,
@@ -141,12 +141,12 @@ static chord_t beep[] = {
 };
 
 static chord_t intro_sound[] = {
-    {E5, Fs5, G5, REST, _32ND},
+    {A5, A5, A5, REST, _32ND},
     {REST, REST, REST, REST, END}
 };
 
 static chord_t long_note[] = {
-    {REST, REST, REST, A4, 256},
+    {REST, REST, REST, A4, _WHL},
     {REST, REST, REST, REST, END}
 };
 
