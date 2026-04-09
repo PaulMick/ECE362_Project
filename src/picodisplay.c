@@ -5,6 +5,7 @@
 #include "display_utils.h"
 #include "enemy_logic.h"
 #include "start_screen.h"
+#include "inputs.h"
 
 static int active_level = 1;
 static int start_screen = 1;
@@ -39,20 +40,30 @@ int init() {
     // display utils
     init_display_utils(dh);
 
+    //input handling
+    init_inputs();
+
     return 0;
 }
 
 int run() {
+    int player_x = (COLS - 10) / 2;
+    float player_vel = 0;
     while (1) {
+        update_inputs();
         fill_frame(0, 0, 0);
         if (start_screen){
             start_screen_draw();
+            if (input_button_pressed()) {
+                start_screen = 0;
+                enemy_level_init();
+            }
         }
         else{
-            //enemy_level_init() run on button press...upcoming
+            //player_x = move_player(player_x, player_vel); coming soon
             enemy_level_update();
             enemy_logic_draw();
-            draw_img((COLS - 10) / 2, ROWS - 7, IMG_SHOOTER);
+            draw_img(player_x, ROWS - 7, IMG_SHOOTER);
         }
         update_frame();
         sleep_ms(50);
