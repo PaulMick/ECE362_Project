@@ -99,6 +99,7 @@ typedef enum {
 
 typedef enum {
     END = 0,
+    LOOP = -1,
     _64TH = 1,
     _32ND = 2,
     _16TH = 4,
@@ -135,19 +136,94 @@ void sound_cutoff_isr_a();
 void sound_isr_b();
 void sound_cutoff_isr_b();
 
+static chord_t stop_sound[] = {
+    {REST, REST, REST, REST, END}
+};
+
 static chord_t beep[] = {
     {A5, A5, A5, A5, _32ND},
     {REST, REST, REST, REST, END}
 };
 
-static chord_t intro_sound[] = {
-    {A5, A5, A5, REST, _32ND},
+static chord_t start_sound_bit[] = {
+    {E5, Fs5, G5, REST, _16TH},
     {REST, REST, REST, REST, END}
 };
 
-static chord_t long_note[] = {
-    {REST, REST, REST, A4, _WHL},
+static chord_t bullet_sound[] = {
+    {REST, REST, REST, A5, _16TH},
     {REST, REST, REST, REST, END}
+};
+
+static chord_t enemy_death_sound[] = {
+    {REST, REST, REST, A4, _16TH},
+    {REST, REST, REST, As4, _16TH},
+    {REST, REST, REST, B4, _16TH},
+    {REST, REST, REST, REST, END}
+};
+
+static chord_t player_death_sound[] = {
+    {E4, D4, E3, REST, _QTR},
+    {D4, C4, D3, REST, _8TH},
+    {Cs4, B3, Cs3, REST, _QTR},
+    {C4, As3, C3, REST, _QTR},
+    {B3, F3, B2, REST, _WHL},
+    {REST, REST, REST, REST, END},
+};
+
+static chord_t background_music[] = {
+    {E5, Bf4, E4, REST, _8TH},
+    {B4, F4, B3, REST, _8TH},
+    {F5, C5, F4, REST, _8TH},
+    {E5, Bf4, E4, REST, _8TH},
+
+    {Gs5, D5, Gs4, REST, _8TH},
+    {D5, Af4, D4, REST, _8TH},
+    {C5, Fs4, C4, REST, _8TH},
+    {B4, F4, B3, REST, _8TH},
+
+    {E5, Bf4, E4, REST, _8TH},
+    {C5, Fs4, C4, REST, _8TH},
+    {F5, B4, F4, REST, _8TH},
+    {E5, Bf4, E4, REST, _8TH},
+
+    {Gs5, D5, Gs4, REST, _8TH},
+    {B4, F4, B3, REST, _8TH},
+    {C5, Fs4, C4, REST, _8TH},
+    {D5, Af4, D4, REST, _8TH},
+
+    {E5, Bf4, E4, REST, _8TH},
+    {F5, B4, F4, REST, _8TH},
+    {C5, Fs4, C4, REST, _8TH},
+
+    {Gs5, D5, Gs4, REST, _8TH},
+    {E5, Bf4, E4, REST, _8TH},
+
+    {E5, Bf4, E4, REST, _8TH},
+    {F5, B4, F4, REST, _8TH},
+    {Fs5, C5, Fs4, REST, _8TH},
+    {G5, Df5, G4, REST, _8TH},
+
+    {Gs5, D5, Gs4, REST, _8TH},
+    {A5, Ef5, A4, REST, _8TH},
+    {Bf5, E5, Bf4, REST, _8TH},
+    {B5, F5, B4, REST, _8TH},
+
+    {E5, Bf4, E4, REST, _8TH},
+    {B5, F5, B4, REST, _8TH},
+    {C5, Fs4, C4, REST, _8TH},
+    {Gs5, D5, Gs4, REST, _8TH},
+
+    {F5, B4, F4, REST, _8TH},
+    {E5, Bf4, E4, REST, _8TH},
+    {D5, Af4, D4, REST, _8TH},
+    {C5, Fs4, C4, REST, _8TH},
+
+    {E5, Bf4, E4, REST, _8TH},
+    {Gs5, D5, Gs4, REST, _8TH},
+    {E5, Bf4, E4, REST, _8TH},
+
+    {REST, REST, REST, REST, LOOP},
 };
 
 #endif

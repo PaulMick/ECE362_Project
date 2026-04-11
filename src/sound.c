@@ -113,6 +113,12 @@ void init_sound() {
     hw_set_bits(&timer1_hw->inte, 1 << 1);
     irq_set_exclusive_handler(timer_hardware_alarm_get_irq_num(timer1_hw, 1), sound_cutoff_isr_b);
     irq_set_enabled(timer_hardware_alarm_get_irq_num(timer1_hw, 1), true);
+
+    // turn off speakers
+    pwm_set_enabled(PWM_CHAN_SPEAKER0, false);
+    pwm_set_enabled(PWM_CHAN_SPEAKER1, false);
+    pwm_set_enabled(PWM_CHAN_SPEAKER2, false);
+    pwm_set_enabled(PWM_CHAN_SPEAKER3, false);
 }
 
 void set_divider(float div, uint8_t index) {
@@ -159,10 +165,12 @@ void sound_isr_a() {
     hw_clear_bits(&timer0_hw->intr, 1 << 0);
     chord_t current_chord = current_sound_a[sound_counter_a];
     if (current_chord.duration == END) {
-        printf("end A\n");
         set_note(REST, 0);
         set_note(REST, 1);
         set_note(REST, 2);
+        return;
+    } else if (current_chord.duration == LOOP) {
+        play_sound(current_sound_a, SEL_A);
         return;
     }
     set_note(current_chord.note0, 0);
@@ -179,8 +187,10 @@ void sound_isr_b() {
     hw_clear_bits(&timer1_hw->intr, 1 << 0);
     chord_t current_chord = current_sound_b[sound_counter_b];
     if (current_chord.duration == END) {
-        printf("end B\n");
         set_note(REST, 3);
+        return;
+    } else if (current_chord.duration == LOOP) {
+        play_sound(current_sound_b, SEL_B);
         return;
     }
     set_note(current_chord.note3, 3);
