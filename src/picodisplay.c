@@ -1,12 +1,36 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
-#include "gen_utils.h"
 #include "display_driver.h"
 #include "display_utils.h"
-#include "sound.h"
+#include "enemy_logic.h"
+#include "start_screen.h"
+#include "inputs.h"
+
+static int active_level = 2;
+static int start_screen = 1;
+int frame_count = 0;
+
+
+static void enemy_level_init(void) {
+    if (active_level == 1) {
+        enemy_logic_init_level1();
+    } else if (active_level == 2) {
+        enemy_logic_init_level2();
+    } else {
+        enemy_logic_init_level3();
+    }
+}
+
+static void enemy_level_update(void) {
+    if (active_level == 1) {
+        enemy_logic_update_level1();
+    } else if (active_level == 2) {
+        enemy_logic_update_level2();
+    } else {
+        enemy_logic_update_level3();
+    }
+}
 
 int init() {
     // stdio
@@ -18,41 +42,34 @@ int init() {
     // display utils
     init_display_utils(dh);
 
-    // sound
-    init_sound();
+    //input handling
+    init_inputs();
 
     return 0;
 }
 
 int run() {
-    // float x = 103.826;
+    int player_x = (COLS - 10) / 2;
+    float player_vel = 0;
     while (1) {
-        // fill_frame(0, 0, 0);
-        // ///////////////////////////
-
-        // draw_rect(0, 0, 64, 32, 1, 255, 255, 255);
-
-        // draw_str(2, 2, "HELLO WORLD", FONT_5X5_FLEX, 255, 255, 0);
-
-        // draw_img(2, 8, IMG_SMILE);
-
-        
-        // draw_line(x, 2, LINE_DOWN, 28, 255, 0, 0);
-        // x ++;
-        // if (x == 63) {
-        //     x = 0;
-        // }
-        
-        // ///////////////////////////
-        // sleep_ms(1);
-        // update_frame();
-        // sleep_ms(9);
-
-        // x += 0.125;
-        // if (x > FREQ_MAX) {
-        //     x = 0.125;
-        // }
-        // sleep_ms(10);
+        update_inputs();
+        fill_frame(0, 0, 0);
+        if (start_screen){
+            start_screen_draw();
+            if (input_button_pressed()) {
+                start_screen = 0;
+                enemy_level_init();
+            }
+        }
+        else{
+            //player_x = move_player(player_x, player_vel); coming soon
+            enemy_level_update();
+            enemy_logic_draw();
+            draw_img(player_x, ROWS - 7, IMG_SHOOTER);
+        }
+        update_frame();
+        frame_count++;
+        sleep_ms(16);
     }
 
     return 0;
