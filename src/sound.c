@@ -12,14 +12,14 @@
 #define WAVE_SAMPLES 256
 
 // speaker pin numbers
-#define SPEAKER0 30
-#define SPEAKER1 32
-#define SPEAKER2 34
-#define SPEAKER3 36
-#define PWM_CHAN_SPEAKER0 7
-#define PWM_CHAN_SPEAKER1 8
-#define PWM_CHAN_SPEAKER2 9
-#define PWM_CHAN_SPEAKER3 10
+#define SPEAKER0 32
+#define SPEAKER1 34
+#define SPEAKER2 36
+#define SPEAKER3 38
+#define PWM_CHAN_SPEAKER0 8
+#define PWM_CHAN_SPEAKER1 9
+#define PWM_CHAN_SPEAKER2 10
+#define PWM_CHAN_SPEAKER3 11
 #define DMA_CHAN_SPEAKER0 0
 #define DMA_CHAN_SPEAKER1 1
 #define DMA_CHAN_SPEAKER2 2
