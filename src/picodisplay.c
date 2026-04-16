@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -6,6 +7,8 @@
 #include "enemy_logic.h"
 #include "start_screen.h"
 #include "inputs.h"
+#include "sound.h"
+#include "leaderboard.h"
 
 static int active_level = 2;
 static int start_screen = 1;
@@ -44,6 +47,12 @@ int init() {
 
     //input handling
     init_inputs();
+
+    // sound
+    init_sound();
+
+    // leaderboard
+    init_leaderboard();
 
     return 0;
 }
