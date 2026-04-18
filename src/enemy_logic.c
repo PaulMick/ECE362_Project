@@ -5,6 +5,7 @@
 #include "display_utils.h"
 #include "gen_utils.h"
 #include "bullets.h"
+#include "sound.h"
 
 #define FP_SHIFT 8 //enemy velo
 
@@ -173,6 +174,7 @@ static void enemy_logic_update_with_specs(const level_specs_t *specs) {
             int ex = from_fp(enemies[i].x_fp);
             int ey = from_fp(enemies[i].y_fp);
             bullets_spawn_enemy(ex + ENEMY_W/2, ey + ENEMY_H);
+            play_sound(enemy_bullet_sound, SEL_B);
         }
     }
 }

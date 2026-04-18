@@ -6,6 +6,7 @@
 #include "display_utils.h"
 #include "assets.h"
 #include "player.h"
+#include "sound.h"
 
 #define FP_SHIFT 8
 #define BULLET_SPEED_FP ((int32_t)2 << FP_SHIFT) // 2 px/frame
@@ -111,6 +112,7 @@ void bullets_check_enemies(void) {
             int ey = from_fp(enemies[e].y_fp);
             if (bx + BULLET_W > ex && bx < ex + ENEMY_W &&
                 by + BULLET_H > ey && by < ey + ENEMY_H) {
+                play_sound(enemy_death_sound, SEL_B);
                 player_bullets[b].active = false;
                 enemies[e].alive = false;
                 break;

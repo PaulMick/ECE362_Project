@@ -1,7 +1,9 @@
 #include "start_screen.h"
 #include "display_utils.h"
+#include "sound.h"
 
 static int frame = 0;
+int last_reveal = 0;
 
 int start_screen_draw(void) {
     const char *line1 = "SPACE";
@@ -9,12 +11,16 @@ int start_screen_draw(void) {
     const int len1 = 5;
     const int len2 = 8;
     const int total_chars = len1 + len2;
-    const int frames_per_char = 12; //~200ms per, tune as needed
+    const int frames_per_char = 15; //~200ms per, tune as needed
     
     int reveal = frame / frames_per_char;
     if (reveal > total_chars) {
         reveal = total_chars;
     }
+    if (reveal != last_reveal) {
+        play_sound(start_sound_bit, SEL_A);
+    }
+    last_reveal = reveal;
     // draw SPACE
     int line1chars = reveal < len1 ? reveal : len1;
     int x = 22;
@@ -39,11 +45,15 @@ int start_screen_draw(void) {
         draw_rect(x2, y2, 2, 5, -1, 0, 255, 100);
     }
     // hold 30 frames after full reveal, then loop
-    if (frame > total_chars * frames_per_char + 40) {
+    if (frame > total_chars * frames_per_char + 300) {
         frame = 0;
     } else {
         frame++;
     }
 
     return 0;
+}
+
+void reset_start_screen() {
+    frame = 0;
 }
