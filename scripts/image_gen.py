@@ -9,7 +9,7 @@ cname = "shooter"
 
 black_is_transparent = True
 
-cv_im = cv2.imread(f"input/{fname}.png")
+cv_im = cv2.imread(f"images/{fname}.png")
 np_im = np.asarray(cv_im)
 
 print(f"#define {cname.upper()}_WIDTH {width}")
