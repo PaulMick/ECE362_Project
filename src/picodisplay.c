@@ -11,6 +11,7 @@
 #include "leaderboard.h"
 #include "player.h"
 #include "bullets.h"
+#include "wall_logic.h"
 
 static int active_level = 1;
 static int start_screen = 1;
@@ -86,6 +87,7 @@ int run() {
                 enemy_level_init();
                 player_init();
                 bullets_init();
+                walls_init();
             }
         }
         else{
@@ -108,6 +110,7 @@ int run() {
             advance_level_if_complete();
 
             // draw (back to front)
+            print_walls();
             enemy_logic_draw();
             bullets_draw();
             player_draw();
