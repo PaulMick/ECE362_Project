@@ -13,4 +13,6 @@ typedef enum {
     IMG_SMILE, IMG_ENEMY1, IMG_ENEMY2, IMG_ENEMY3, IMG_ENEMY4, IMG_SHOOTER
 } img_t;
 
+uint32_t start_time;
+
 #endif
