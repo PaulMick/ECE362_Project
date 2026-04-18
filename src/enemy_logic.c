@@ -41,6 +41,8 @@ static const level_specs_t LEVEL3_SPECS = {
 };
 
 static int active_enemy_count = 0;
+static int formation_dir = 1;
+static int formation_speed_fp = 0;
 
 static int to_fp(int px) {
     return px << FP_SHIFT;
@@ -48,6 +50,16 @@ static int to_fp(int px) {
 
 static int from_fp(int fp) {
     return fp >> FP_SHIFT;
+}
+
+static int formation_speed_for_specs(const level_specs_t *specs) {
+    if (specs->enemy_count <= 4) {
+        return to_fp(1) / 5;
+    }
+    if (specs->enemy_count <= 8) {
+        return to_fp(1) / 4;
+    }
+    return to_fp(1) / 3;
 }
 
 static void enemy_logic_init_with_specs(const level_specs_t *specs) {
@@ -58,6 +70,8 @@ static void enemy_logic_init_with_specs(const level_specs_t *specs) {
     const int formation_x0 = (COLS - formation_w) / 2;
     const int formation_y0 = ((ROWS - bottom_reserved_h) - formation_h) / 2 - 2;
     active_enemy_count = specs->enemy_count;
+    formation_dir = 1;
+    formation_speed_fp = formation_speed_for_specs(specs);
 
     for (int i = 0; i < active_enemy_count; i++) {
         const int col = i % specs->enemy_cols;
@@ -117,6 +131,41 @@ static void enemy_logic_update_with_specs(const level_specs_t *specs) {
         e->x_fp += e->vx_fp;
         e->y_fp += e->vy_fp;
     }
+
+    const int min_x_fp = to_fp(0);
+    const int max_x_fp = to_fp(COLS - ENEMY_W);
+    int side_dx_fp = formation_dir * formation_speed_fp;
+    bool hit_edge = false;
+    bool has_idle_enemy = false;
+
+    for (int i = 0; i < active_enemy_count; i++) {
+        enemy_t *e = &enemies[i];
+        if (!e->alive || e->motion == ENEMY_FLY_IN) {
+            continue;
+        }
+        has_idle_enemy = true;
+        const int next_x_fp = e->x_fp + side_dx_fp;
+        if (next_x_fp < min_x_fp || next_x_fp > max_x_fp) {
+            hit_edge = true;
+            break;
+        }
+    }
+
+    if (has_idle_enemy) {
+        if (hit_edge) {
+            formation_dir = -formation_dir;
+            side_dx_fp = formation_dir * formation_speed_fp;
+        }
+
+        for (int i = 0; i < active_enemy_count; i++) {
+            enemy_t *e = &enemies[i];
+            if (!e->alive || e->motion == ENEMY_FLY_IN) {
+                continue;
+            }
+            e->x_fp += side_dx_fp;
+        }
+    }
+
     // Enemy firing — ~1/64 chance per tick; a random enemy (if alive) fires.
     if ((rand() & 0x3F) == 0 && active_enemy_count > 0) {
         int i = rand() % active_enemy_count;
