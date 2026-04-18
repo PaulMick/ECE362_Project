@@ -20,6 +20,9 @@ void walls_init() {
 
 void damage_wall(int i) { //could also use a wall obj here to directly modify
     walls[i].state++;
+    if (walls[i].state > 5) {
+        walls[i].state = 5;
+    }
 }
 
 void print_walls() {
