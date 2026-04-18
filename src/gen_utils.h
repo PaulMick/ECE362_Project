@@ -22,7 +22,6 @@ typedef struct {
     int8_t state; //0=undamaged, 1=damaged, 2=more damaged, 3=more damaged, 4=last stage before disappearing, 5=destroyed
 } wall_t;
 
-extern wall_t walls[3];
 typedef enum {
     ENEMY_FLY_IN,
     ENEMY_IDLE

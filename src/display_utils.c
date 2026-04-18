@@ -186,6 +186,66 @@ void draw_img(int x, int y, img_t img) {
                 }
             }
             break;
+        case IMG_WALL_1:
+            black_is_transparent = wall_1_img[0][0] >> 24;
+            for (int j = 0; j < WALL_1_HEIGHT; j ++) {
+                for (int i = 0; i < WALL_1_WIDTH; i ++) {
+                    if (!black_is_transparent || !(wall_1_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, wall_1_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_WALL_DMG_1:
+            black_is_transparent = wall_dmg_1_img[0][0] >> 24;
+            for (int j = 0; j < WALL_DMG_1_HEIGHT; j ++) {
+                for (int i = 0; i < WALL_DMG_1_WIDTH; i ++) {
+                    if (!black_is_transparent || !(wall_dmg_1_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, wall_dmg_1_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_WALL_DMG_2:
+            black_is_transparent = wall_dmg_2_img[0][0] >> 24;
+            for (int j = 0; j < WALL_DMG_2_HEIGHT; j ++) {
+                for (int i = 0; i < WALL_DMG_2_WIDTH; i ++) {
+                    if (!black_is_transparent || !(wall_dmg_2_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, wall_dmg_2_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_WALL_DMG_3:
+            black_is_transparent = wall_dmg_3_img[0][0] >> 24;
+            for (int j = 0; j < WALL_DMG_3_HEIGHT; j ++) {
+                for (int i = 0; i < WALL_DMG_3_WIDTH; i ++) {
+                    if (!black_is_transparent || !(wall_dmg_3_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, wall_dmg_3_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_WALL_DMG_4:
+            black_is_transparent = wall_dmg_4_img[0][0] >> 24;
+            for (int j = 0; j < WALL_DMG_4_HEIGHT; j ++) {
+                for (int i = 0; i < WALL_DMG_4_WIDTH; i ++) {
+                    if (!black_is_transparent || !(wall_dmg_4_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, wall_dmg_4_img[j][i]);
+                    }
+                }
+            }
+            break;
+        case IMG_EMPTY_WALL:
+            black_is_transparent = empty_wall_img[0][0] >> 24;
+            for (int j = 0; j < EMPTY_WALL_HEIGHT; j ++) {
+                for (int i = 0; i < EMPTY_WALL_WIDTH; i ++) {
+                    if (!black_is_transparent || !(empty_wall_img[j][i] & 1 << 24)) {
+                        draw_pixel_enc(x + i, y + j, empty_wall_img[j][i]);
+                    }
+                }
+            }
+            break;
         default: return; break;
     }
     

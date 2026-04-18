@@ -4,7 +4,9 @@
 #include "gen_utils.h"
 #include "wall_logic.h"
 
-static void walls_init() {
+wall_t walls[3];
+
+void walls_init() {
     walls[0].x = 10;
     walls[0].y = 10;
     walls[0].state = 0;
@@ -16,12 +18,13 @@ static void walls_init() {
     walls[2].state = 0;
 }
 
-static void damage_wall(int i) { //could also use a wall obj here to directly modify
+void damage_wall(int i) { //could also use a wall obj here to directly modify
     walls[i].state++;
 }
 
-static void print_walls() {
+void print_walls() {
     for(int i = 0; i < 3; i++) {
+        // printf("%d\n", walls[i].state);
         switch(walls[i].state) {
             case(0):
                 draw_img(walls[i].x, walls[i].y, IMG_WALL_1);
