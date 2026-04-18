@@ -8,13 +8,13 @@ wall_t walls[3];
 
 void walls_init() {
     walls[0].x = 10;
-    walls[0].y = 10;
+    walls[0].y = 17;
     walls[0].state = 0;
     walls[1].x = 27;
-    walls[1].y = 10;
+    walls[1].y = 17;
     walls[1].state = 0;
     walls[2].x = 44;
-    walls[2].y = 10;
+    walls[2].y = 17;
     walls[2].state = 0;
 }
 
