@@ -12,7 +12,7 @@
 #include "player.h"
 #include "bullets.h"
 
-static int active_level = 2;
+static int active_level = 1;
 static int start_screen = 1;
 int frame_count = 0;
 
@@ -34,6 +34,21 @@ static void enemy_level_update(void) {
         enemy_logic_update_level2();
     } else {
         enemy_logic_update_level3();
+    }
+}
+
+static void advance_level_if_complete(void) {
+    if (!enemy_logic_all_dead()) {
+        return;
+    }
+
+    if (active_level < 3) {
+        active_level++;
+        enemy_level_init();
+        bullets_init();
+    } else {
+        active_level = 1;
+        start_screen = 1;
     }
 }
 
@@ -79,6 +94,7 @@ int run() {
             bullets_update();
             bullets_check_player();
             bullets_check_enemies();
+            advance_level_if_complete();
 
             // draw (back to front)
             enemy_logic_draw();

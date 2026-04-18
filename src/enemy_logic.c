@@ -168,3 +168,12 @@ void enemy_logic_draw(void) {
         draw_img(from_fp(enemies[i].x_fp), from_fp(enemies[i].y_fp), enemies[i].img);
     }
 }
+
+bool enemy_logic_all_dead(void) {
+    for (int i = 0; i < active_enemy_count; i++) {
+        if (enemies[i].alive) {
+            return false;
+        }
+    }
+    return true;
+}
