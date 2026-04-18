@@ -6,6 +6,10 @@
 
 wall_t walls[3];
 
+int get_wall_state(int i) {
+    return walls[i].state;
+}
+
 void walls_init() {
     walls[0].x = 10;
     walls[0].y = 17;

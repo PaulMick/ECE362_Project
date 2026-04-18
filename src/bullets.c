@@ -7,6 +7,7 @@
 #include "assets.h"
 #include "player.h"
 #include "sound.h"
+#include "wall_logic.h"
 
 #define FP_SHIFT 8
 #define BULLET_SPEED_FP ((int32_t)2 << FP_SHIFT) // 2 px/frame
@@ -97,6 +98,19 @@ void bullets_check_player(void) {
             enemy_bullets[i].active = false;
             player_on_hit();
         }
+        // walls
+        if (bx >= 10 && bx <= 20 && by >= 17 && by <= 24 && get_wall_state(0) != 5) {
+            enemy_bullets[i].active = false;
+            damage_wall(0);
+        }
+        if (bx >= 27 && bx <= 37 && by >= 17 && by <= 24 && get_wall_state(1) != 5) {
+            enemy_bullets[i].active = false;
+            damage_wall(1);
+        }
+        if (bx >= 44 && bx <= 54 && by >= 17 && by <= 24 && get_wall_state(2) != 5) {
+            enemy_bullets[i].active = false;
+            damage_wall(2);
+        }
     }
 }
 
@@ -116,6 +130,19 @@ void bullets_check_enemies(void) {
                 player_bullets[b].active = false;
                 enemies[e].alive = false;
                 break;
+            }
+            // walls
+            if (bx >= 10 && bx <= 20 && by >= 17 && by <= 24 && get_wall_state(0) != 5) {
+                player_bullets[b].active = false;
+                // damage_wall(0);
+            }
+            if (bx >= 27 && bx <= 37 && by >= 17 && by <= 24 && get_wall_state(1) != 5) {
+                player_bullets[b].active = false;
+                // damage_wall(1);
+            }
+            if (bx >= 44 && bx <= 54 && by >= 17 && by <= 24 && get_wall_state(2) != 5) {
+                player_bullets[b].active = false;
+                // damage_wall(2);
             }
         }
     }
