@@ -9,6 +9,7 @@
 #include "inputs.h"
 #include "sound.h"
 #include "leaderboard.h"
+#include "player.h"
 
 static int active_level = 2;
 static int start_screen = 1;
@@ -58,8 +59,6 @@ int init() {
 }
 
 int run() {
-    int player_x = (COLS - 10) / 2;
-    float player_vel = 0;
     while (1) {
         update_inputs();
         fill_frame(0, 0, 0);
@@ -68,13 +67,17 @@ int run() {
             if (input_button_pressed()) {
                 start_screen = 0;
                 enemy_level_init();
+                player_init();
             }
         }
         else{
-            //player_x = move_player(player_x, player_vel); coming soon
+            // logic
+            player_update();
             enemy_level_update();
+
+            // draw (back to front)
             enemy_logic_draw();
-            draw_img(player_x, ROWS - 7, IMG_SHOOTER);
+            player_draw();
         }
         update_frame();
         frame_count++;
