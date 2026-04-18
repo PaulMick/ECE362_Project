@@ -155,6 +155,11 @@ static chord_t bullet_sound[] = {
     {REST, REST, REST, REST, END}
 };
 
+static chord_t enemy_bullet_sound[] = {
+    {REST, REST, REST, A4, _16TH},
+    {REST, REST, REST, REST, END}
+};
+
 static chord_t enemy_death_sound[] = {
     {REST, REST, REST, A4, _16TH},
     {REST, REST, REST, As4, _16TH},

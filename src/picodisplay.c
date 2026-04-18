@@ -66,6 +66,7 @@ int run() {
         if (start_screen){
             start_screen_draw();
             if (input_button_pressed()) {
+                play_sound(background_music, SEL_A);
                 start_screen = 0;
                 enemy_level_init();
                 player_init();
@@ -73,6 +74,14 @@ int run() {
             }
         }
         else{
+            if (player.lives == 0) {
+                play_sound(stop_sound, SEL_A);
+                sleep_ms(500);
+                play_sound(player_death_sound, SEL_A);
+                sleep_ms(2000);
+                start_screen = 1;
+                continue;
+            }
             // logic
             player_update();
             enemy_level_update();

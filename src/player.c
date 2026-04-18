@@ -7,9 +7,10 @@
 #include "display_utils.h"
 #include "assets.h"
 #include "bullets.h"
+#include "sound.h"
 
 #define FP_SHIFT 8
-#define KP_FP ((int32_t)((1 << FP_SHIFT) / 4)) // ~0.25, raise if response sluggish (/3 etc)
+#define KP_FP ((int32_t)((1 << FP_SHIFT) / 3)) // ~0.25, raise if response sluggish (/3 etc)
 #define KD_FP ((int32_t)(((1 << FP_SHIFT) * 2) / 5)) // ~0.40, raise if too zippy (/4 etc)
 #define SHOOT_COOLDOWN 4 // in frames
 #define POT_MAX 4095
@@ -60,6 +61,7 @@ void player_update(void) {
         player.shoot_cooldown--;
     }
     if (player.lives > 0 && player.shoot_cooldown == 0 && input_button_pressed()) {
+        play_sound(bullet_sound, SEL_B);
         bullets_spawn_player(from_fp(player.x_fp) + SHOOTER_WIDTH/2, PLAYER_Y - 1);
         player.shoot_cooldown = SHOOT_COOLDOWN;
     }
