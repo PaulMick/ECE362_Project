@@ -92,13 +92,13 @@ void eeprom_read(uint16_t loc, uint32_t * data_read, uint8_t length) {
     }
 }
 
-int main() {
-    stdio_init_all();
-    init_i2c();
-    uint32_t test_nums [2] = {101, 1495};
-    uint8_t test_int [4] = {0, 0, 0, 0};
-    eeprom_write(0, test_nums[0]);
-    eeprom_read(0, &test_int, 4);
-    printf("Number Read from EEPROM: %ld", test_int);
-    return 0;
-}
+// int main() { //USED FOR TESTING ONLY
+//     stdio_init_all();
+//     init_i2c();
+//     uint32_t test_nums [2] = {101, 1495};
+//     uint8_t test_int [4] = {0, 0, 0, 0};
+//     eeprom_write(0, test_nums[0]);
+//     eeprom_read(0, &test_int, 4);
+//     printf("Number Read from EEPROM: %ld", test_int);
+//     return 0;
+// }
