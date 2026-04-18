@@ -3,9 +3,9 @@ import cv2
 
 # set these manually
 width = 10
-height = 7
-fname = "wall_dmg_4"
-cname = "wall_dmg_4"
+height = 6
+fname = "shooter"
+cname = "shooter"
 
 black_is_transparent = True
 

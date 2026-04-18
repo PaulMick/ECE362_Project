@@ -1,9 +1,56 @@
+#include <stdio.h>
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
-#include "gen_utils.h"
 #include "display_driver.h"
 #include "display_utils.h"
+#include "enemy_logic.h"
+#include "start_screen.h"
+#include "inputs.h"
+#include "sound.h"
+#include "leaderboard.h"
+#include "player.h"
+#include "bullets.h"
+
+static int active_level = 1;
+static int start_screen = 1;
+int frame_count = 0;
+
+
+static void enemy_level_init(void) {
+    if (active_level == 1) {
+        enemy_logic_init_level1();
+    } else if (active_level == 2) {
+        enemy_logic_init_level2();
+    } else {
+        enemy_logic_init_level3();
+    }
+}
+
+static void enemy_level_update(void) {
+    if (active_level == 1) {
+        enemy_logic_update_level1();
+    } else if (active_level == 2) {
+        enemy_logic_update_level2();
+    } else {
+        enemy_logic_update_level3();
+    }
+}
+
+static void advance_level_if_complete(void) {
+    if (!enemy_logic_all_dead()) {
+        return;
+    }
+
+    if (active_level < 3) {
+        active_level++;
+        enemy_level_init();
+        bullets_init();
+    } else {
+        active_level = 1;
+        start_screen = 1;
+    }
+}
 
 int init() {
     // stdio
@@ -15,32 +62,59 @@ int init() {
     // display utils
     init_display_utils(dh);
 
+    //input handling
+    init_inputs();
+
+    // sound
+    init_sound();
+
+    // leaderboard
+    init_leaderboard();
+
     return 0;
 }
 
 int run() {
-    int x = 0;
     while (1) {
+        update_inputs();
         fill_frame(0, 0, 0);
-        ///////////////////////////
-
-        draw_rect(0, 0, 64, 32, 1, 255, 255, 255);
-
-        draw_str(2, 2, "HELLO WORLD", FONT_5X5_FLEX, 255, 255, 0);
-
-        draw_img(2, 8, IMG_SMILE);
-
-        
-        draw_line(x, 2, LINE_DOWN, 28, 255, 0, 0);
-        x ++;
-        if (x == 63) {
-            x = 0;
+        if (start_screen){
+            start_screen_draw();
+            if (input_button_pressed()) {
+                play_sound(background_music, SEL_A);
+                start_screen = 0;
+                enemy_level_init();
+                player_init();
+                bullets_init();
+            }
         }
-        
-        ///////////////////////////
-        sleep_ms(1);
+        else{
+            if (player.lives == 0) {
+                play_sound(stop_sound, SEL_A);
+                sleep_ms(500);
+                play_sound(player_death_sound, SEL_A);
+                sleep_ms(2000);
+                start_screen = 1;
+                active_level = 1;
+                reset_start_screen();
+                continue;
+            }
+            // logic
+            player_update();
+            enemy_level_update();
+            bullets_update();
+            bullets_check_player();
+            bullets_check_enemies();
+            advance_level_if_complete();
+
+            // draw (back to front)
+            enemy_logic_draw();
+            bullets_draw();
+            player_draw();
+        }
         update_frame();
-        sleep_ms(9);
+        frame_count++;
+        sleep_ms(16);
     }
 
     return 0;
