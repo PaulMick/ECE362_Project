@@ -53,3 +53,7 @@ int start_screen_draw(void) {
 
     return 0;
 }
+
+void reset_start_screen() {
+    frame = 0;
+}

@@ -95,6 +95,8 @@ int run() {
                 play_sound(player_death_sound, SEL_A);
                 sleep_ms(2000);
                 start_screen = 1;
+                active_level = 1;
+                reset_start_screen();
                 continue;
             }
             // logic
