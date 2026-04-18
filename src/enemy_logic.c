@@ -1,11 +1,10 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include "enemy_logic.h"
 #include "display_driver.h"
 #include "display_utils.h"
 #include "gen_utils.h"
-
-#define ENEMY_W 6
-#define ENEMY_H 4
+#include "bullets.h"
 
 #define FP_SHIFT 8 //enemy velo
 
@@ -76,6 +75,7 @@ static void enemy_logic_init_with_specs(const level_specs_t *specs) {
         enemies[i].fly_in_step = 0;
         enemies[i].img = sprites[i % 4];
         enemies[i].motion = ENEMY_FLY_IN;
+        enemies[i].alive = true;
     }
 
     for (int i = active_enemy_count; i < MAX_ENEMY_COUNT; i++) {
@@ -89,6 +89,7 @@ static void enemy_logic_init_with_specs(const level_specs_t *specs) {
         enemies[i].fly_in_step = 0;
         enemies[i].img = IMG_ENEMY1;
         enemies[i].motion = ENEMY_IDLE;
+        enemies[i].alive = false;
     }
 }
 
@@ -96,6 +97,9 @@ static void enemy_logic_update_with_specs(const level_specs_t *specs) {
     (void)specs;
     for (int i = 0; i < active_enemy_count; i++) {
         enemy_t *e = &enemies[i];
+        if (!e->alive) {
+            continue;
+        }
         if (e->motion == ENEMY_FLY_IN) {
             e->x_fp += e->vx_fp;
             e->y_fp += e->vy_fp;
@@ -112,6 +116,15 @@ static void enemy_logic_update_with_specs(const level_specs_t *specs) {
 
         e->x_fp += e->vx_fp;
         e->y_fp += e->vy_fp;
+    }
+    // Enemy firing — ~1/64 chance per tick; a random enemy (if alive) fires.
+    if ((rand() & 0x3F) == 0 && active_enemy_count > 0) {
+        int i = rand() % active_enemy_count;
+        if (enemies[i].alive) {
+            int ex = from_fp(enemies[i].x_fp);
+            int ey = from_fp(enemies[i].y_fp);
+            bullets_spawn_enemy(ex + ENEMY_W/2, ey + ENEMY_H);
+        }
     }
 }
 
@@ -149,6 +162,9 @@ void enemy_logic_update_level3(void) {
 
 void enemy_logic_draw(void) {
     for (int i = 0; i < active_enemy_count; i++) {
+        if (!enemies[i].alive) {
+            continue;
+        }
         draw_img(from_fp(enemies[i].x_fp), from_fp(enemies[i].y_fp), enemies[i].img);
     }
 }

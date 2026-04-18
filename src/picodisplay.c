@@ -10,6 +10,7 @@
 #include "sound.h"
 #include "leaderboard.h"
 #include "player.h"
+#include "bullets.h"
 
 static int active_level = 2;
 static int start_screen = 1;
@@ -68,15 +69,20 @@ int run() {
                 start_screen = 0;
                 enemy_level_init();
                 player_init();
+                bullets_init();
             }
         }
         else{
             // logic
             player_update();
             enemy_level_update();
+            bullets_update();
+            bullets_check_player();
+            bullets_check_enemies();
 
             // draw (back to front)
             enemy_logic_draw();
+            bullets_draw();
             player_draw();
         }
         update_frame();

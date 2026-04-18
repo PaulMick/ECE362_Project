@@ -32,6 +32,7 @@ typedef struct {
     int fly_in_step;
     img_t img;
     enemy_motion_t motion;
+    bool alive;
 } enemy_t;
 
 typedef struct {
@@ -51,6 +52,8 @@ typedef struct {
 
 #define MAX_ENEMY_COUNT 40
 #define MAX_ENEMY_BULLETS 12
+#define ENEMY_W 6
+#define ENEMY_H 4
 
 #define PLAYER_START_LIVES 3
 #define MAX_PLAYER_BULLETS 8

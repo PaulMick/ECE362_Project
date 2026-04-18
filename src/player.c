@@ -6,6 +6,7 @@
 #include "display_driver.h"
 #include "display_utils.h"
 #include "assets.h"
+#include "bullets.h"
 
 #define FP_SHIFT 8
 #define KP_FP ((int32_t)((1 << FP_SHIFT) / 4)) // ~0.25, raise if response sluggish (/3 etc)
@@ -59,7 +60,7 @@ void player_update(void) {
         player.shoot_cooldown--;
     }
     if (player.lives > 0 && player.shoot_cooldown == 0 && input_button_pressed()) {
-        // bullets_spawn_player(from_fp(player.x_fp) + SHOOTER_WIDTH/2, PLAYER_Y - 1);
+        bullets_spawn_player(from_fp(player.x_fp) + SHOOTER_WIDTH/2, PLAYER_Y - 1);
         player.shoot_cooldown = SHOOT_COOLDOWN;
     }
 }
