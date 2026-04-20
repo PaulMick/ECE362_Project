@@ -35,7 +35,7 @@ int start_screen_draw(void) {
     // draw INVADERS
     int line2chars = reveal > len1 ? reveal - len1 : 0;
     if (line2chars > len2) line2chars = len2;
-    int x2 = 12;
+    int x2 = 15;
     int y2 = 20;
     for (int i = 0; i < line2chars; i++) {
         x2 += draw_char(x2, y2, line2[i], FONT_5X5_FLEX, 0, 255, 100) + 1;
