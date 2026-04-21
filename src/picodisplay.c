@@ -12,9 +12,14 @@
 #include "player.h"
 #include "bullets.h"
 #include "wall_logic.h"
+#include "score.h"
+#include "leaderboard_display.h"
 
 static int active_level = 1;
 static int start_screen = 1;
+static int entering_player_info = 0;
+static int showing_leaderboard = 0;
+static uint32_t final_score = 0;
 int frame_count = 0;
 
 
@@ -48,8 +53,17 @@ static void advance_level_if_complete(void) {
         enemy_level_init();
         bullets_init();
     } else {
+        //player cleared level 3 — win path into score flow
+        survived_to_end = 1;
+        final_score = score_compute();
+        if (final_score > leaderboard[2].score) {
+            leaderboard_display_init_entry(final_score);
+            entering_player_info = 1;
+        } else {
+            leaderboard_display_init_board(final_score);
+            showing_leaderboard = 1;
+        }
         active_level = 1;
-        start_screen = 1;
     }
 }
 
@@ -84,10 +98,26 @@ int run() {
             if (input_button_pressed()) {
                 play_sound(background_music, SEL_A);
                 start_screen = 0;
+                score_reset();
                 enemy_level_init();
                 player_init();
                 bullets_init();
                 walls_init();
+            }
+        }
+        else if (entering_player_info) {
+            if (leaderboard_display_update_entry()) {
+                entering_player_info = 0;
+                showing_leaderboard = 1;
+            }
+            leaderboard_display_draw_entry();
+        }
+        else if (showing_leaderboard) {
+            leaderboard_display_draw_board();
+            if (input_button_pressed()) {
+                showing_leaderboard = 0;
+                start_screen = 1;
+                reset_start_screen();
             }
         }
         else{
@@ -96,12 +126,21 @@ int run() {
                 sleep_ms(500);
                 play_sound(player_death_sound, SEL_A);
                 sleep_ms(2000);
-                start_screen = 1;
+                //resync button state after 2.5s of blocked input handling
+                update_inputs();
+                final_score = score_compute();
+                if (final_score > leaderboard[2].score) {
+                    leaderboard_display_init_entry(final_score);
+                    entering_player_info = 1;
+                } else {
+                    leaderboard_display_init_board(final_score);
+                    showing_leaderboard = 1;
+                }
                 active_level = 1;
-                reset_start_screen();
                 continue;
             }
             // logic
+            survival_frames++;
             player_update();
             enemy_level_update();
             bullets_update();

@@ -8,6 +8,7 @@
 #include "player.h"
 #include "sound.h"
 #include "wall_logic.h"
+#include "score.h"
 
 #define FP_SHIFT 8
 #define BULLET_SPEED_FP ((int32_t)2 << FP_SHIFT) // 2 px/frame
@@ -129,6 +130,7 @@ void bullets_check_enemies(void) {
                 play_sound(enemy_death_sound, SEL_B);
                 player_bullets[b].active = false;
                 enemies[e].alive = false;
+                enemies_killed++;
                 break;
             }
             // walls

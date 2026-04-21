@@ -10,6 +10,8 @@ typedef struct {
     uint32_t score; // score
 } leaderboard_slot_t;
 
+extern leaderboard_slot_t leaderboard[LEADERBOARD_SLOTS]; //for display
+
 void init_leaderboard();
 void eeprom_write(uint16_t write_addr, uint8_t *read_addr, int len_bytes);
 void eeprom_read(uint16_t read_addr, uint8_t *write_addr, int len_bytes);

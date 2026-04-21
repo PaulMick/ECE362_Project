@@ -12,6 +12,9 @@
 #define LEADERBOARD_MEM_BASE 0x0
 #define LEADERBOARD_SLOTS 10
 #define LEADERBOARD_SLOT_BYTES 8 // 4 chars for initial and a 32bit int for score
+// header sits right past the leaderboard data (80 bytes used, header at 0x50)
+#define LEADERBOARD_HEADER_ADDR (LEADERBOARD_SLOTS * LEADERBOARD_SLOT_BYTES)
+#define LEADERBOARD_HEADER      0xECE36202u
 
 leaderboard_slot_t leaderboard[LEADERBOARD_SLOTS];
 
@@ -24,6 +27,23 @@ void init_leaderboard() {
     gpio_pull_up(MASTER_SCL);
 
     i2c_init(i2c1, I2C_BAUDRATE);
+
+    // boot guard: fresh chip reads 0xFF everywhere, header mismatch means zero-init
+    uint32_t header = 0;
+    eeprom_read(LEADERBOARD_HEADER_ADDR, (uint8_t*)&header, 4);
+    if (header != LEADERBOARD_HEADER) {
+        for (int i = 0; i < LEADERBOARD_SLOTS; i++) {
+            char *s = malloc(5);
+            s[0]='-'; s[1]='-'; s[2]='-'; s[3]='\0'; s[4]='\0';
+            leaderboard[i] = (leaderboard_slot_t){.initials = s, .score = 0};
+        }
+        save_leaderboard();
+        uint32_t h = LEADERBOARD_HEADER;
+        eeprom_write(LEADERBOARD_HEADER_ADDR, (uint8_t*)&h, 4);
+    } else {
+        // populate the global once; gameplay reads leaderboard[] directly after this
+        get_leaderboard();
+    }
 }
 
 void eeprom_write(uint16_t write_addr, uint8_t *read_addr, int len_bytes) {
