@@ -30,6 +30,9 @@ void init_leaderboard() {
 
     // boot guard: fresh chip reads 0xFF everywhere, header mismatch means zero-init
     uint32_t header = 0;
+    
+    // Keep commented, will erase leaderboard data
+    // wipe_leaderboard();
     eeprom_read(LEADERBOARD_HEADER_ADDR, (uint8_t*)&header, 4);
     if (header != LEADERBOARD_HEADER) {
         for (int i = 0; i < LEADERBOARD_SLOTS; i++) {
@@ -85,6 +88,21 @@ void add_score_leaderboard(char *initials, uint32_t score) {
             score = tmp.score;
         }
     }
+}
+
+void wipe_leaderboard() {
+    uint8_t buf[LEADERBOARD_SLOTS * LEADERBOARD_SLOT_BYTES];
+    for (int i = 0; i < LEADERBOARD_SLOTS; i ++) {
+        buf[i * LEADERBOARD_SLOT_BYTES] = '*';
+        buf[i * LEADERBOARD_SLOT_BYTES + 1] = '*';
+        buf[i * LEADERBOARD_SLOT_BYTES + 2] = '*';
+        buf[i * LEADERBOARD_SLOT_BYTES + 3] = '*';
+        buf[i * LEADERBOARD_SLOT_BYTES + 4] = 0;
+        buf[i * LEADERBOARD_SLOT_BYTES + 5] = 0;
+        buf[i * LEADERBOARD_SLOT_BYTES + 6] = 0;
+        buf[i * LEADERBOARD_SLOT_BYTES + 7] = 0;
+    }
+    eeprom_write(LEADERBOARD_MEM_BASE, buf, LEADERBOARD_SLOTS * LEADERBOARD_SLOT_BYTES);
 }
 
 void save_leaderboard() {

@@ -18,6 +18,7 @@ void eeprom_read(uint16_t read_addr, uint8_t *write_addr, int len_bytes);
 leaderboard_slot_t *get_leaderboard();
 void add_score_leaderboard(char *initials, uint32_t score);
 void save_leaderboard();
+void wipe_leaderboard();
 
 int reserved_addr(uint8_t addr);
 void scan_i2c();
